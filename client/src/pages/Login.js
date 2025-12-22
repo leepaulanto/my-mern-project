@@ -6,7 +6,7 @@ const Login = () => {
   const [isSignup, setIsSignup] = useState(false);
   const [formData, setFormData] = useState({ name: '', email: '', password: '' });
 
-  const backendUrl = "https://zany-orbit-695jx597g79qfrjq5-5000.app.github.dev";
+  const backendUrl = process.env.REACT_APP_BACKEND_URL || "https://zany-orbit-695jx597g79qfrjq5-5000.app.github.dev";
 
 const handleSubmit = async (e) => {
   e.preventDefault();

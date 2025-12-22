@@ -4,7 +4,7 @@ import Navbar from '../components/Navbar';
 
 const Home = () => {
   const [user, setUser] = useState(null);
-  const backendUrl = "https://zany-orbit-695jx597g79qfrjq5-5000.app.github.dev";
+  const backendUrl = process.env.REACT_APP_BACKEND_URL || "https://zany-orbit-695jx597g79qfrjq5-5000.app.github.dev";
 
   useEffect(() => {
     const fetchUser = async () => {
@@ -22,7 +22,7 @@ const Home = () => {
       <div className="container" style={{ paddingTop: '50px' }}>
         <section className="card" style={{ marginBottom: '20px' }}>
           <h2>About NeonVote</h2>
-          <p>This platform ensures a fair election process where each authenticated user is allowed to vote only once[cite: 16, 21].</p>
+          <p>This platform ensures a fair election process where each authenticated user is allowed to vote only once.</p>
         </section>
 
         <section className="card">

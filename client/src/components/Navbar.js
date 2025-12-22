@@ -7,7 +7,7 @@ const Navbar = ({ user }) => {
   const handleLogout = () => {
     // Redirect to backend logout logic
     // Replace with your actual Public Port 5000 URL
-    const backendUrl = "https://zany-orbit-695jx597g79qfrjq5-5000.app.github.dev"; 
+    const backendUrl = process.env.REACT_APP_BACKEND_URL || "https://zany-orbit-695jx597g79qfrjq5-5000.app.github.dev"; 
     window.open(`${backendUrl}/auth/logout`, "_self");
   };
 

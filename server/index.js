@@ -12,10 +12,10 @@ const User = require('./models/User');
 const Vote = require('./models/Vote'); // New Model for security
 
 const app = express();
-const FRONTEND_URL = "https://zany-orbit-695jx597g79qfrjq5-3000.app.github.dev";
+const FRONTEND_URL = process.env.FRONTEND_URL ||"https://zany-orbit-695jx597g79qfrjq5-3000.app.github.dev";
 
 app.use(cors({
-  origin: true, // Allow React Frontend
+  origin: process.env.FRONTEND_URL, // Allow React Frontend
   credentials: true
 }));
 
@@ -44,7 +44,7 @@ app.get('/auth/google/callback',
   passport.authenticate('google', { failureRedirect: '/' }),
   (req, res) => {
     // Successful authentication, redirect to Frontend
-    res.redirect('https://zany-orbit-695jx597g79qfrjq5-3000.app.github.dev/dashboard');
+    res.redirect(`${process.env.FRONTEND_URL}/dashboard`);
   }
 );
 
@@ -55,7 +55,7 @@ app.get('/auth/linkedin', passport.authenticate('linkedin'));
 app.get('/auth/linkedin/callback', 
   passport.authenticate('linkedin', { failureRedirect: '/' }),
   (req, res) => {
-    res.redirect('https://zany-orbit-695jx597g79qfrjq5-3000.app.github.dev/dashboard');
+    res.redirect(`${process.env.FRONTEND_URL}/dashboard`);
   }
 );
 
@@ -71,7 +71,7 @@ app.get('/auth/logout', (req, res) => {
   req.logout(() => {
     // ⚠️ CRITICAL FIX: Redirect to your FRONTEND URL (Port 3000), not "/"
     // Replace this URL with your actual Port 3000 address
-    res.redirect('https://zany-orbit-695jx597g79qfrjq5-3000.app.github.dev');
+    res.redirect(`${process.env.FRONTEND_URL}`);
   });
 });
 

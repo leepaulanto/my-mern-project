@@ -22,7 +22,7 @@ passport.deserializeUser(async (id, done) => {
 passport.use(new GoogleStrategy({
     clientID: process.env.GOOGLE_CLIENT_ID,
     clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-    callbackURL: "https://zany-orbit-695jx597g79qfrjq5-5000.app.github.dev/auth/google/callback"
+    callbackURL: `${process.env.BACKEND_URL}/auth/google/callback`
   },
   async (accessToken, refreshToken, profile, done) => {
     try {
@@ -50,7 +50,7 @@ passport.use(new GoogleStrategy({
 passport.use(new LinkedInStrategy({
     clientID: process.env.LINKEDIN_CLIENT_ID,
     clientSecret: process.env.LINKEDIN_CLIENT_SECRET,
-    callbackURL: "https://zany-orbit-695jx597g79qfrjq5-5000.app.github.dev/auth/linkedin/callback",
+    callbackURL: `${process.env.BACKEND_URL}/auth/linkedin/callback`,
     scope: ['r_emailaddress', 'r_liteprofile'], // Permissions we need
   },
   async (accessToken, refreshToken, profile, done) => {

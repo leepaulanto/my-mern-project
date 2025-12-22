@@ -51,21 +51,34 @@ passport.use(new LinkedInStrategy({
     clientID: process.env.LINKEDIN_CLIENT_ID,
     clientSecret: process.env.LINKEDIN_CLIENT_SECRET,
     callbackURL: `${process.env.BACKEND_URL}/auth/linkedin/callback`,
-    scope: ['r_emailaddress', 'r_liteprofile'], // Permissions we need
+    scope: ['openid', 'profile', 'email'], 
+    state: true // Permissions we need
   },
+  
   async (accessToken, refreshToken, profile, done) => {
     try {
+      // LinkedIn OIDC profile structure is different:
+      // profile.id usually contains the sub (subject) identifier
       let user = await User.findOne({ authProviderId: profile.id });
+      
       if (!user) {
+        // LinkedIn OIDC returns names in a flatter structure
+        const firstName = profile.name?.givenName || "";
+        const lastName = profile.name?.familyName || "";
+        const fullName = profile.displayName || `${firstName} ${lastName}`.trim();
+
         user = await new User({
           authProviderId: profile.id,
-          name: profile.displayName,
-          email: profile.emails[0].value,
-          linkedinProfile: profile._json.publicProfileUrl || "https://linkedin.com", // Try to grab URL
+          name: fullName,
+          email: profile.emails[0]?.value || "",
+          // OIDC profiles often don't provide the public profile URL directly.
+          // For the Registry, we can link to a generic search or their profile if available.
+          linkedinProfile: profile._json?.publicProfileUrl || `https://www.linkedin.com/search/results/all/?keywords=${encodeURIComponent(fullName)}`,
         }).save();
       }
       done(null, user);
     } catch (err) {
+      console.error("LinkedIn Auth Error:", err);
       done(err, null);
     }
   }

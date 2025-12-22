@@ -25,7 +25,12 @@ app.use(express.json());
 app.use(session({
   secret: process.env.SESSION_SECRET,
   resave: false,
-  saveUninitialized: false
+  saveUninitialized: false,
+  cookie: {
+    sameSite: 'none', // Critical for cross-domain cookies
+    secure: true,     // Required when sameSite is 'none'
+    httpOnly: true
+  }
 }));
 
 // --- NEW: INITIALIZE PASSPORT ---

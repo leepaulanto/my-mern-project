@@ -4,6 +4,9 @@ const mongoose = require('mongoose');
 const cors = require('cors');
 const passport = require('passport'); // NEW
 const session = require('express-session'); // NEW
+const MongoStore = require('connect-mongo');
+const nodemailer = require('nodemailer');
+const crypto = require('crypto'); // Built-in Node module for generating tokens
 require('./config/passport'); // NEW: Run the passport config file
 
 // Import Models directly here
@@ -30,6 +33,10 @@ app.use(session({
   secret: process.env.SESSION_SECRET,
   resave: false,
   saveUninitialized: false,
+  store: MongoStore.create({
+    mongoUrl: process.env.MONGO_URI, // 👈 Stores sessions in your Database
+    collectionName: 'sessions' // Optional: Name of the collection
+  }),
   cookie: {
     sameSite: 'none', // Critical for cross-domain cookies
     secure: true,     // Required when sameSite is 'none'
@@ -37,6 +44,15 @@ app.use(session({
     maxAge: 24 * 60 * 60 * 1000 // 24 hours
   }
 }));
+
+// Configure Email Sender
+const transporter = nodemailer.createTransport({
+  service: 'gmail',
+  auth: {
+    user: process.env.EMAIL_USER, // Your Gmail address
+    pass: process.env.EMAIL_PASS  // Your Gmail App Password (NOT your login password)
+  }
+});
 
 // --- NEW: INITIALIZE PASSPORT ---
 app.use(passport.initialize());
@@ -225,16 +241,77 @@ app.post('/api/auth/login', async (req, res) => {
   }
 });
 
-// 3. FORGOT PASSWORD (Logic Only)
+// 3. FORGOT PASSWORD 
+// 1. User requests password reset
 app.post('/api/auth/forgot-password', async (req, res) => {
   const { email } = req.body;
   try {
     const user = await User.findOne({ email });
-    if (!user) return res.status(404).json({ error: "User not found" });
+    if (!user) {
+      // Security Tip: Don't reveal if user exists. Just say "If email exists, sent."
+      return res.json({ message: "If that email is registered, we sent a link." });
+    }
 
-    // Requirement met: Logic provided as per assignment 
-    res.json({ message: "Verification successful. A reset link has been sent to your email." });
+    // 1. Generate a random token
+    const token = crypto.randomBytes(20).toString('hex');
+
+    // 2. Set token and expiration (1 hour from now)
+    user.resetPasswordToken = token;
+    user.resetPasswordExpires = Date.now() + 3600000; // 1 hour
+    await user.save();
+
+    // 3. Create the Reset Link (Points to your Frontend)
+    const resetLink = `${process.env.FRONTEND_URL}/reset-password/${token}`;
+
+    // 4. Send Email
+    const mailOptions = {
+      from: process.env.EMAIL_USER,
+      to: user.email,
+      subject: 'Password Reset Request',
+      text: `You are receiving this because you (or someone else) have requested the reset of the password for your account.\n\n
+      Please click on the following link, or paste this into your browser to complete the process:\n\n
+      ${resetLink}\n\n
+      If you did not request this, please ignore this email and your password will remain unchanged.\n`
+    };
+
+    transporter.sendMail(mailOptions, (err, response) => {
+      if (err) {
+        console.error("Email Error:", err);
+        return res.status(500).json({ error: "Error sending email" });
+      }
+      res.json({ message: "Password reset link sent to email." });
+    });
+
   } catch (err) {
+    res.status(500).json({ error: "Server error" });
+  }
+});
+// 2. User submits new password with the token
+app.post('/api/auth/reset-password/:token', async (req, res) => {
+  try {
+    // Find user with this token AND ensure it hasn't expired
+    const user = await User.findOne({
+      resetPasswordToken: req.params.token,
+      resetPasswordExpires: { $gt: Date.now() } // $gt means "Greater Than" now
+    });
+
+    if (!user) {
+      return res.status(400).json({ error: "Password reset token is invalid or has expired." });
+    }
+
+    // Hash the new password
+    const hashedPassword = await bcrypt.hash(req.body.password, 10);
+
+    // Update User
+    user.password = hashedPassword;
+    user.resetPasswordToken = undefined; // Clear the token
+    user.resetPasswordExpires = undefined;
+    await user.save();
+
+    res.json({ message: "Success! Your password has been changed." });
+
+  } catch (err) {
+    console.error(err);
     res.status(500).json({ error: "Server error" });
   }
 });

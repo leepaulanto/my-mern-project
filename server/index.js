@@ -12,6 +12,10 @@ const User = require('./models/User');
 const Vote = require('./models/Vote'); // New Model for security
 
 const app = express();
+
+// ⚠️ Important for GitHub Codespaces / Cross-Origin
+app.set('trust proxy', 1); 
+
 const FRONTEND_URL = process.env.FRONTEND_URL ||"https://zany-orbit-695jx597g79qfrjq5-3000.app.github.dev";
 
 app.use(cors({
@@ -29,7 +33,8 @@ app.use(session({
   cookie: {
     sameSite: 'none', // Critical for cross-domain cookies
     secure: true,     // Required when sameSite is 'none'
-    httpOnly: true
+    httpOnly: true,
+    maxAge: 24 * 60 * 60 * 1000 // 24 hours
   }
 }));
 
@@ -146,7 +151,7 @@ app.get('/api/voters', async (req, res) => {
 // server/index.js
 
 // --- NEW ROUTE: Update User Profile (For Google Users) ---
-app.put('/api/user/update', async (req, res) => {
+app.post('/api/user/update', async (req, res) => {
   const { userId, linkedinUrl } = req.body;
   try {
     if (!linkedinUrl.includes('linkedin.com')) {
@@ -237,19 +242,19 @@ app.post('/api/auth/forgot-password', async (req, res) => {
 // server/index.js
 
 // ⚠️ Important for GitHub Codespaces / Cross-Origin
-app.set('trust proxy', 1); 
+//app.set('trust proxy', 1); 
 
-app.use(session({
-  secret: process.env.SESSION_SECRET || 'secret',
-  resave: true, // Force session to save even if not modified
-  saveUninitialized: false,
-  cookie: {
-    sameSite: 'none', // 👈 Required for cross-domain cookies
-    secure: true,     // 👈 Required when sameSite is 'none'
-    httpOnly: true,
-    maxAge: 24 * 60 * 60 * 1000 // 24 hours
-  }
-}));
+//app.use(session({
+  //secret: process.env.SESSION_SECRET || 'secret',
+  //resave: true, // Force session to save even if not modified
+  //saveUninitialized: false,
+  //cookie: {
+    //sameSite: 'none', // 👈 Required for cross-domain cookies
+    //secure: true,     // 👈 Required when sameSite is 'none'
+    //httpOnly: true,
+    //maxAge: 24 * 60 * 60 * 1000 // 24 hours
+  //}
+//}));
 
 // Connect to MongoDB
 mongoose.connect(process.env.MONGO_URI)

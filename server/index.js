@@ -56,10 +56,11 @@ app.use(session({
   secret: process.env.SESSION_SECRET,
   resave: false,
   saveUninitialized: false,
-  store: MongoStore.create({
-    mongoUrl: process.env.MONGO_URI, // 👈 Stores sessions in your Database
-    collectionName: 'sessions' // Optional: Name of the collection
-  }),
+  store: sessionStore,
+  //store: MongoStore.create({
+    //mongoUrl: process.env.MONGO_URI, // 👈 Stores sessions in your Database
+    //collectionName: 'sessions' // Optional: Name of the collection
+  //}),
   cookie: {
     sameSite: 'none', // Critical for cross-domain cookies
     secure: true,     // Required when sameSite is 'none'

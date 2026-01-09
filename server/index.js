@@ -14,6 +14,22 @@ const Candidate = require('./models/Candidate');
 const User = require('./models/User');
 const Vote = require('./models/Vote'); // New Model for security
 
+
+// ---------------------------------------------------------
+// 🛡️ THE FIX: Handle Node v24 Import Weirdness
+// ---------------------------------------------------------
+let MongoStoreRaw = require('connect-mongo');
+let MongoStore;
+
+// Case 1: Node v24+ often hides the library in .default
+if (MongoStoreRaw.default) {
+  MongoStore = MongoStoreRaw.default;
+  console.log("✅ Using MongoStore.default (Node v24 fix)");
+} else {
+  MongoStore = MongoStoreRaw;
+}
+// ---------------------------------------------------------
+
 const app = express();
 
 // ⚠️ Important for GitHub Codespaces / Cross-Origin
@@ -29,26 +45,27 @@ app.use(cors({
 app.use(express.json());
 
 // ==========================================
-// 🛡️ THE HYBRID FIX: SMART SESSION STORE
+// 🛡️ SMART SESSION STORE SETUP
 // ==========================================
 let sessionStore;
 
-// Check if Render installed the old version (v3) or the new one (v6)
-if (typeof MongoStore === 'function') {
-  console.log("⚠️ DETECTED OLD CONNECT-MONGO VERSION (v3). Switching to fallback mode.");
-  // Old Syntax (v3) - This prevents the crash!
+if (MongoStore.create) {
+  // Version 6+ (Standard)
+  console.log("✅ Using MongoStore.create (v6 standard)");
+  sessionStore = MongoStore.create({
+    mongoUrl: process.env.MONGO_URI,
+    collectionName: 'sessions'
+  });
+} else if (typeof MongoStore === 'function') {
+  // Version 3 (Legacy)
+  console.log("⚠️ Using Legacy MongoStore (v3)");
   const MongoStoreV3 = MongoStore(session);
   sessionStore = new MongoStoreV3({ 
     url: process.env.MONGO_URI,
     collection: 'sessions'
   });
 } else {
-  console.log("✅ DETECTED NEW CONNECT-MONGO VERSION (v6). Using standard mode.");
-  // New Syntax (v6)
-  sessionStore = MongoStore.create({
-    mongoUrl: process.env.MONGO_URI,
-    collectionName: 'sessions'
-  });
+  console.error("❌ CRITICAL ERROR: Could not initialize MongoStore. Dumping object:", MongoStore);
 }
 
 // --- NEW: SESSION SETUP ---

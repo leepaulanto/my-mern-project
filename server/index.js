@@ -28,6 +28,29 @@ app.use(cors({
 
 app.use(express.json());
 
+// ==========================================
+// 🛡️ THE HYBRID FIX: SMART SESSION STORE
+// ==========================================
+let sessionStore;
+
+// Check if Render installed the old version (v3) or the new one (v6)
+if (typeof MongoStore === 'function') {
+  console.log("⚠️ DETECTED OLD CONNECT-MONGO VERSION (v3). Switching to fallback mode.");
+  // Old Syntax (v3) - This prevents the crash!
+  const MongoStoreV3 = MongoStore(session);
+  sessionStore = new MongoStoreV3({ 
+    url: process.env.MONGO_URI,
+    collection: 'sessions'
+  });
+} else {
+  console.log("✅ DETECTED NEW CONNECT-MONGO VERSION (v6). Using standard mode.");
+  // New Syntax (v6)
+  sessionStore = MongoStore.create({
+    mongoUrl: process.env.MONGO_URI,
+    collectionName: 'sessions'
+  });
+}
+
 // --- NEW: SESSION SETUP ---
 app.use(session({
   secret: process.env.SESSION_SECRET,

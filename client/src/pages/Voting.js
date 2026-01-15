@@ -59,7 +59,7 @@ const Voting = () => {
     }
     try {
       // Call our new backend route
-      const res = await axios.put('${backendUrl}/api/user/update', {
+      const res = await axios.post(`${backendUrl}/api/user/update`, {
         userId: currentUser._id,
         linkedinUrl: linkedinInput
       });

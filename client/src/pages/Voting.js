@@ -112,6 +112,7 @@ const Voting = () => {
                         className="btn"
                           style={{ 
                               display: 'block', 
+                                textAlign: 'center',
                                   marginBottom: '10px', 
                                       background: '#0077b5', // LinkedIn Blue
                                           color: 'white', 

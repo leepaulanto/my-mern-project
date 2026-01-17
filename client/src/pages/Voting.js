@@ -104,6 +104,24 @@ const Voting = () => {
               <div key={candidate._id} className="card candidate-card">
                 <img src={candidate.photoUrl} alt={candidate.name} style={{ width: '100px', height: '100px', borderRadius: '50%', objectFit: 'cover' }} />
                 <h3>{candidate.name}</h3>
+                {/* Link to LinkedIn Profile */}
+                <a 
+                  href={candidate.linkedinUrl} 
+                    target="_blank" 
+                      rel="noopener noreferrer"
+                        className="btn"
+                          style={{ 
+                              display: 'block', 
+                                  marginBottom: '10px', 
+                                      background: '#0077b5', // LinkedIn Blue
+                                          color: 'white', 
+                                              textDecoration: 'none',
+                                                  textAlign: 'center'
+                                                    }}
+                                                    >
+                                                      View LinkedIn Profile
+                                                      </a>
+                                                      
                 <div style={{ margin: '15px 0', background: 'rgba(255,255,255,0.05)', padding: '10px', borderRadius: '8px' }}>
                   <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '5px' }}>
                     <span style={{ color: 'var(--text-muted)' }}>Votes: {candidate.voteCount}</span>

@@ -7,7 +7,7 @@ const Results = () => {
   const [currentUser, setCurrentUser] = useState(null);
 
   // 👇 PASTE YOUR PUBLIC PORT 5000 URL HERE
- const backendUrl = process.env.REACT_APP_BACKEND_URL || "https://zany-orbit-695jx597g79qfrjq5-5000.app.github.dev";
+ const backendUrl = process.env.REACT_APP_BACKEND_URL;
 
   useEffect(() => {
     const fetchResults = async () => {

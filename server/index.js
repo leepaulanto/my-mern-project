@@ -34,7 +34,7 @@ const app = express();
 
 app.set('trust proxy', 1); 
 
-const FRONTEND_URL = process.env.FRONTEND_URL || "https://zany-orbit-695jx597g79qfrjq5-3000.app.github.dev";
+const FRONTEND_URL = process.env.FRONTEND_URL;
 
 app.use(cors({
   origin: process.env.FRONTEND_URL,

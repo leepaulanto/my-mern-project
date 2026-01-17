@@ -60,10 +60,22 @@ const handleSubmit = async (e) => {
         
         {/* MANDATORY: Forgot Password Option */}
         {!isSignup && (
-          <a href="#" onClick={() => alert("Reset link sent to your email!")} 
-             style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>
-            Forgot Password? 
-          </a>
+          <button 
+            type="button" 
+              onClick={() => alert("Reset link sent to your email!")} 
+                style={{ 
+                    fontSize: '0.8rem', 
+                        color: 'var(--text-muted)', 
+                            background: 'none', 
+                                border: 'none', 
+                                    padding: 0, 
+                                        textDecoration: 'underline', 
+                                            cursor: 'pointer' 
+                                              }}
+                                              >
+                                                Forgot Password? 
+                                                </button>
+                                                
         )}
         
         {/* Support & Terms Links */}

@@ -2,12 +2,14 @@ import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import Navbar from '../components/Navbar'; // Import Navbar
 
+const backendUrl = process.env.REACT_APP_BACKEND_URL;
+
 const Results = () => {
   const [voters, setVoters] = useState([]);
   const [currentUser, setCurrentUser] = useState(null);
 
   // 👇 PASTE YOUR PUBLIC PORT 5000 URL HERE
- const backendUrl = process.env.REACT_APP_BACKEND_URL;
+
 
   useEffect(() => {
     const fetchResults = async () => {

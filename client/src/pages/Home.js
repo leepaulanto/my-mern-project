@@ -2,9 +2,11 @@ import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import Navbar from '../components/Navbar';
 
+const backendUrl = process.env.REACT_APP_BACKEND_URL;
+
 const Home = () => {
   const [user, setUser] = useState(null);
-  const backendUrl = process.env.REACT_APP_BACKEND_URL;
+  
 
   useEffect(() => {
     const fetchUser = async () => {

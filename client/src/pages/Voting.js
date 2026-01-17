@@ -3,6 +3,8 @@ import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import Navbar from '../components/Navbar';
 
+const backendUrl = process.env.REACT_APP_BACKEND_URL;
+
 const Voting = () => {
   const [candidates, setCandidates] = useState([]);
   const [selectedCandidate, setSelectedCandidate] = useState(null);
@@ -16,7 +18,6 @@ const Voting = () => {
 
   const navigate = useNavigate();
   // 👇 PASTE YOUR PUBLIC PORT 5000 URL HERE
-  const backendUrl = process.env.REACT_APP_BACKEND_URL;
 
   // 1. Fetch Data
   useEffect(() => {

@@ -116,7 +116,9 @@ const Voting = () => {
                                       background: '#0077b5', // LinkedIn Blue
                                           color: 'white', 
                                               textDecoration: 'none',
-                                                  textAlign: 'center'
+                                                  padding: '8px 0',
+                                                      fontSize: '0.9rem',
+                                                          borderRadius: '4px'
                                                     }}
                                                     >
                                                       View LinkedIn Profile
